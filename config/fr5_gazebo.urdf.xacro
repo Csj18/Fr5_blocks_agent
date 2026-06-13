@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="fairino5_v6_robot">
+    <xacro:arg name="initial_positions_file" default="$(find block_stacking_agent)/config/initial_positions.yaml"/>
+    <xacro:arg name="controller_config_file" default="$(find block_stacking_agent)/config/ros2_controllers.yaml"/>
+
+    <!-- Import fairino5_v6_robot URDF -->
+    <xacro:include filename="$(find fairino_description)/urdf/fairino5_v6.urdf"/>
+
+    <!-- Import gripper (hand_base_link + finger_link1/2 + fj1/fj2) -->
+    <xacro:include filename="$(find block_stacking_agent)/config/fr5_gripper.urdf.xacro"/>
+    <xacro:fr5_gripper/>
+
+    <!-- Import Gazebo ros2_control config -->
+    <xacro:include filename="$(find block_stacking_agent)/config/fr5_gazebo_ros2_control.xacro"/>
+
+    <!-- Apply ros2_control -->
+    <xacro:fr5_gazebo_ros2_control
+        name="Fairino5GazeboSystem"
+        initial_positions_file="$(arg initial_positions_file)"
+        controller_config_file="$(arg controller_config_file)"/>
+</robot>

@@ -1,0 +1,20 @@
+digraph G {
+"hand_base_link" -> "finger_link1"[label=" Broadcaster: default_authority\nAverage rate: 101.471\nBuffer length: 0.68\nMost recent transform: 56.32\nOldest transform: 55.64\n"];
+"wrist3_link" -> "hand_base_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"hand_base_link" -> "finger_link2"[label=" Broadcaster: default_authority\nAverage rate: 101.471\nBuffer length: 0.68\nMost recent transform: 56.32\nOldest transform: 55.64\n"];
+"base_link" -> "shoulder_link"[label=" Broadcaster: default_authority\nAverage rate: 101.471\nBuffer length: 0.68\nMost recent transform: 56.32\nOldest transform: 55.64\n"];
+"fairino5_v6_robot" -> "base_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"shoulder_link" -> "upperarm_link"[label=" Broadcaster: default_authority\nAverage rate: 101.471\nBuffer length: 0.68\nMost recent transform: 56.32\nOldest transform: 55.64\n"];
+"upperarm_link" -> "forearm_link"[label=" Broadcaster: default_authority\nAverage rate: 101.471\nBuffer length: 0.68\nMost recent transform: 56.32\nOldest transform: 55.64\n"];
+"forearm_link" -> "wrist1_link"[label=" Broadcaster: default_authority\nAverage rate: 101.471\nBuffer length: 0.68\nMost recent transform: 56.32\nOldest transform: 55.64\n"];
+"wrist1_link" -> "wrist2_link"[label=" Broadcaster: default_authority\nAverage rate: 101.471\nBuffer length: 0.68\nMost recent transform: 56.32\nOldest transform: 55.64\n"];
+"wrist2_link" -> "wrist3_link"[label=" Broadcaster: default_authority\nAverage rate: 101.471\nBuffer length: 0.68\nMost recent transform: 56.32\nOldest transform: 55.64\n"];
+"world" -> "fairino5_v6_robot"[label=" Broadcaster: default_authority\nAverage rate: 1130000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"world" -> "block_red"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"world" -> "block_green"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"world" -> "block_blue"[label=" Broadcaster: default_authority\nAverage rate: 1130000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1781275901.839599"[ shape=plaintext ] ;
+}->"world";
+}

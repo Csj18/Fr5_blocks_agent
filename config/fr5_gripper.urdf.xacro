@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="fr5_gripper" params="prefix:=''">
+        <!-- ===== Hand base (fixed to wrist3_link) ===== -->
+        <joint name="${prefix}arm_hand_joint" type="fixed">
+            <origin xyz="0 0 0.12" rpy="0 0 3.14159"/>
+            <parent link="wrist3_link"/>
+            <child link="${prefix}hand_base_link"/>
+        </joint>
+
+        <link name="${prefix}hand_base_link">
+            <inertial>
+                <origin xyz="1.045 -0.01 -0.1" rpy="0 0 0"/>
+                <mass value="1.4156"/>
+                <inertia ixx="0.000196" ixy="-2.96E-07" ixz="-1.96E-08"
+                         iyy="0.000433" iyz="2.13E-08" izz="0.000397"/>
+            </inertial>
+            <visual>
+                <origin xyz="0.04 -0.005 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://fr5_description/meshes/hand_base_link.STL"/>
+                </geometry>
+                <material name="gripper_base">
+                    <color rgba="0.5 0.5 0.5 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.04 -0.005 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://fr5_description/meshes/hand_base_link.STL"/>
+                </geometry>
+            </collision>
+        </link>
+
+        <!-- ===== Finger 1 (left) ===== -->
+        <joint name="${prefix}fj1" type="prismatic">
+            <origin xyz="0.0345 0 0" rpy="1.5708 0 0"/>
+            <parent link="${prefix}hand_base_link"/>
+            <child link="${prefix}finger_link1"/>
+            <axis xyz="1 0 0"/>
+            <limit lower="0" upper="0.04" effort="40" velocity="1"/>
+            <dynamics damping="0" friction="0"/>
+        </joint>
+
+        <link name="${prefix}finger_link1">
+            <inertial>
+                <origin xyz="-0.076592 0.078552 0.004856" rpy="0 0 0"/>
+                <mass value="0.05895"/>
+                <inertia ixx="2.37E-05" ixy="4.95E-06" ixz="-3.83E-06"
+                         iyy="1.98E-05" iyz="4.63E-06" izz="3.37E-05"/>
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://fr5_description/meshes/finger_link1.STL"/>
+                </geometry>
+                <material name="gripper_finger">
+                    <color rgba="0.35 0.35 0.35 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://fr5_description/meshes/finger_link1.STL"/>
+                </geometry>
+            </collision>
+        </link>
+
+        <!-- ===== Finger 2 (right) ===== -->
+        <joint name="${prefix}fj2" type="prismatic">
+            <origin xyz="-0.0425 0.0087157 -0.0015" rpy="1.5708 0 3.1416"/>
+            <parent link="${prefix}hand_base_link"/>
+            <child link="${prefix}finger_link2"/>
+            <axis xyz="1 0 0"/>
+            <limit lower="0" upper="0.04" effort="40" velocity="1"/>
+            <dynamics damping="0" friction="0"/>
+        </joint>
+
+        <link name="${prefix}finger_link2">
+            <inertial>
+                <origin xyz="-0.076592 0.080052 0.004856" rpy="0 0 0"/>
+                <mass value="0.05895"/>
+                <inertia ixx="2.37E-05" ixy="4.95E-06" ixz="-3.83E-06"
+                         iyy="1.98E-05" iyz="4.63E-06" izz="3.37E-05"/>
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://fr5_description/meshes/finger_link2.STL"/>
+                </geometry>
+                <material name="gripper_finger">
+                    <color rgba="0.35 0.35 0.35 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://fr5_description/meshes/finger_link2.STL"/>
+                </geometry>
+            </collision>
+        </link>
+    </xacro:macro>
+</robot>
