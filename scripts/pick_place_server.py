@@ -19,6 +19,7 @@ import subprocess
 import threading
 import rclpy
 from rclpy.node import Node
+from rclpy.parameter import Parameter
 from std_msgs.msg import String
 from geometry_msgs.msg import Pose
 from moveit_msgs.msg import CollisionObject, AttachedCollisionObject
@@ -110,9 +111,15 @@ class PickPlaceServer(Node):
             AttachedCollisionObject, "/attached_collision_object", 10)
         self.attached = set()
 
-        # Timer: refresh MoveIt attachments (MoveIt's planning scene monitor
-        # needs periodic re-publication of attached objects)
-        self.timer = self.create_timer(1.0, self._refresh_attachments)
+        # ROS parameter: list of currently attached blocks
+        # Other nodes (block_visual_marker) read this to know what's attached.
+        # Declare with non-empty default so ROS 2 infers string_array type
+        # (empty list [] would be mis-inferred as byte_array in Humble).
+        self.declare_parameter("attached_blocks", [""])
+        self._update_param()
+
+        # Timer: refresh MoveIt attachments + update parameter
+        self.timer = self.create_timer(0.5, self._refresh_attachments)
 
         self._publish_initial_scene()
         self.get_logger().info("PickPlace Server ready")
@@ -127,6 +134,13 @@ class PickPlaceServer(Node):
             obj = make_collision_object(name, pose, info["size"])
             obj.header.stamp = self.get_clock().now().to_msg()
             self.collision_pub.publish(obj)
+
+    def _update_param(self):
+        """Sync attached_blocks parameter for other nodes."""
+        self.set_parameters([Parameter(
+            "attached_blocks",
+            Parameter.Type.STRING_ARRAY,
+            sorted(self.attached))])
 
     def _refresh_attachments(self):
         """Re-publish attached objects so MoveIt doesn't time them out."""
@@ -172,6 +186,7 @@ class PickPlaceServer(Node):
         self.attached_pub.publish(att)
 
         self.attached.add(block)
+        self._update_param()
 
         # 3. Gazebo joint in background (physics attachment)
         #    When created, Gazebo snaps block to gripper.
@@ -209,6 +224,7 @@ class PickPlaceServer(Node):
         self.collision_pub.publish(obj)
 
         self.attached.discard(block)
+        self._update_param()
 
         # 3. Remove Gazebo joint
         def _do():

@@ -9,6 +9,7 @@ RViz: visualization (robot + blocks via TF)
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
+    ExecuteProcess,
     IncludeLaunchDescription,
     SetEnvironmentVariable,
     TimerAction,
@@ -86,6 +87,18 @@ def generate_launch_description():
                 arguments=["-name", "fairino5_v6_robot", "-topic", "robot_description",
                            "-x", "0.0", "-y", "0.0", "-z", "0.05",
                            "-R", "0.0", "-P", "0.0", "-Y", "0.0"],
+                output="screen",
+            )
+        ],
+    )
+
+    # Fix robot base to world (prevent physics drift/sliding)
+    fix_robot_joint = TimerAction(
+        period=6.0,
+        actions=[
+            ExecuteProcess(
+                cmd=["bash", "-c",
+                     'ign service -s /world/block_stacking_world/create --reqtype ignition.msgs.EntityFactory --reptype ignition.msgs.Boolean --req \'sdf: "<sdf version=\\"1.6\\"><joint name=\\"fix_robot_to_world\\" type=\\"fixed\\"><parent>world</parent><child>fairino5_v6_robot::base_link</child></joint></sdf>"\' --timeout 5000'],
                 output="screen",
             )
         ],
@@ -178,6 +191,15 @@ def generate_launch_description():
         ],
     )
 
+    # ── Gazebo → ROS clock bridge ──────────────────────────────────
+    gz_clock_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        arguments=["/world/block_stacking_world/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock"],
+        remappings=[("/world/block_stacking_world/clock", "/clock")],
+        output="screen",
+    )
+
     # ── Gazebo → ROS pose bridge ───────────────────────────────────
     gz_pose_bridge = Node(
         package="ros_gz_bridge",
@@ -247,9 +269,9 @@ def generate_launch_description():
     return LaunchDescription([
         declare_use_gazebo, declare_use_rviz, declare_world_file,
         use_sim_time, robot_state_pub,
-        gazebo_launch, spawn_robot,
+        gazebo_launch, spawn_robot, fix_robot_joint,
         spawn_block_red, spawn_block_green, spawn_block_blue,
-        gz_pose_bridge, block_tf_node, block_collision_node, block_marker_node,
+        gz_clock_bridge, gz_pose_bridge, block_tf_node, block_collision_node, block_marker_node,
         table_marker_node, pick_place_node,
         spawn_joint_state_broadcaster, spawn_fairino5_controller,
         # spawn_gripper_controller,  # disabled: position_controllers not available
