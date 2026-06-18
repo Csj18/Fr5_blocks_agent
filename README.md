@@ -76,13 +76,20 @@ Fairino FR5 Block Stacking Agent
 │   └── threejs_visualizer/      # Three.js前端（渲染scene_graph数据，实时更新堆叠效果）
 │
 ├── config/                      # 配置层
-│   ├── moveit_controllers.yaml  # MoveIt控制器配置
+│   ├── moveit_controllers.yaml  # MoveIt控制器配置（已更名为 ros2_controllers.yaml）
 │   └── skill_params.yaml        # 技能参数（容差、重试次数、力控阈值）
 │
 ├── launch/                      # 启动层
-│   ├── sim_agent.launch.py      # 仿真启动（加载mock_components）
-│   ├── real_agent.launch.py     # 真机启动（加载fairino_hardware）
-│   └── agent_system.launch.py   # 全系统启动
+│   ├── sim_agent.launch.py      # 仿真启动（Gazebo + MoveIt + RViz）
+│   ├── real_agent.launch.py     # 真机启动（加载fairino_hardware，计划中）
+│   └── agent_system.launch.py   # 全系统启动（计划中）
+
+├── scripts/                     # 可执行脚本
+│   ├── pick_place_server.py     # Pick/Place 指令处理（MoveIt IK + Gazebo joint）
+│   ├── block_tf_bridge.py       # Gazebo Pose → /tf 桥接
+│   ├── block_collision_updater.py # Gazebo Pose → MoveIt CollisionObject
+│   ├── block_visual_marker.py   # RViz 积木可视化 Marker
+│   └── table_marker.py          # RViz 桌面可视化 Marker
 │
 ├── rag_data/                    # RAG知识库（物理规则、结构案例、失败经验）
 │
@@ -124,7 +131,7 @@ Fairino FR5 Block Stacking Agent
 - **安装步骤**：  
   1. 克隆仓库至`~/Fairino_agent_ws`；  
   2. `rosdep install --from-paths . --ignore-src -r -y`安装依赖；  
-  3. `colcon build --symlink-install`编译；  
+  3. `colcon build --symlink-install --packages-select block_stacking_agent`编译；  
   4. `python rag_manager.py init --data rag_data/`部署RAG库。  
 - **启动方式**：  
   - 仿真：`ros2 launch block_stacking_agent sim_agent.launch.py`  
