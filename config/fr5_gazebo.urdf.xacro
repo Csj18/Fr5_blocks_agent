@@ -3,6 +3,19 @@
     <xacro:arg name="initial_positions_file" default="$(find block_stacking_agent)/config/initial_positions.yaml"/>
     <xacro:arg name="controller_config_file" default="$(find block_stacking_agent)/config/ros2_controllers.yaml"/>
 
+    <!-- Massive world anchor — keeps robot base fixed to Gazebo world -->
+    <link name="world">
+      <inertial>
+        <mass value="1000.0"/>
+        <inertia ixx="100.0" ixy="0.0" ixz="0.0" iyy="100.0" iyz="0.0" izz="100.0"/>
+      </inertial>
+    </link>
+    <joint name="world_to_base" type="fixed">
+      <parent link="world"/>
+      <child link="base_link"/>
+      <origin xyz="0 0 0.05" rpy="0 0 0"/>
+    </joint>
+
     <!-- Import fairino5_v6_robot URDF -->
     <xacro:include filename="$(find fairino_description)/urdf/fairino5_v6.urdf"/>
 

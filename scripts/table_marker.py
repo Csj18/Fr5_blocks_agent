@@ -24,16 +24,16 @@ class TableMarker(Node):
         m.type = Marker.CUBE
         m.action = Marker.ADD
 
-        # Table pose from block_stacking_world.sdf: <pose>0.5 0 0 0 0 0</pose>
+        # Table pose from block_stacking_world.sdf: <pose>0.5 0 0.025 0 0 0</pose>
         m.pose.position.x = 0.5
         m.pose.position.y = 0.0
-        m.pose.position.z = 0.0
+        m.pose.position.z = 0.025
         m.pose.orientation.w = 1.0
 
-        # Table size: 0.8 x 0.6 x 0.02
+        # Table size: 0.8 x 0.6 x 0.05
         m.scale.x = 0.8
         m.scale.y = 0.6
-        m.scale.z = 0.02
+        m.scale.z = 0.05
 
         m.color.r = 0.5
         m.color.g = 0.35

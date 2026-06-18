@@ -47,11 +47,11 @@ def generate_launch_description():
     initial_positions_path = PathJoinSubstitution([project_share, "config", "initial_positions.yaml"])
     controller_config_path = PathJoinSubstitution([project_share, "config", "ros2_controllers.yaml"])
 
-    # ── Gazebo mesh path ───────────────────────────────────────────
-    # NOTE: SetEnvironmentVariable with PathJoinSubstitution is unreliable.
-    # Use command-line instead:
-    #   IGN_GAZEBO_RESOURCE_PATH=/home/csj/ros2_ws/install/fairino_description/share \
-    #     ros2 launch block_stacking_agent sim_agent.launch.py
+    # ── Gazebo mesh resource path ──────────────────────────────────
+    # Gazebo needs to resolve package://fairino_description and package://fr5_description
+    gz_resource_path = "/home/csj/ros2_ws/install/fairino_description/share:" \
+                       "/home/csj/ros2_ws/install/fr5_description/share"
+    set_gz_resource = SetEnvironmentVariable("IGN_GAZEBO_RESOURCE_PATH", gz_resource_path)
 
     # ── URDF for Gazebo (with gz_ros2_control) ────────────────────
     gz_robot_desc = {
@@ -85,20 +85,8 @@ def generate_launch_description():
             Node(
                 package="ros_gz_sim", executable="create",
                 arguments=["-name", "fairino5_v6_robot", "-topic", "robot_description",
-                           "-x", "0.0", "-y", "0.0", "-z", "0.05",
+                           "-x", "0.5", "-y", "0.0", "-z", "0.0",
                            "-R", "0.0", "-P", "0.0", "-Y", "0.0"],
-                output="screen",
-            )
-        ],
-    )
-
-    # Fix robot base to world (prevent physics drift/sliding)
-    fix_robot_joint = TimerAction(
-        period=6.0,
-        actions=[
-            ExecuteProcess(
-                cmd=["bash", "-c",
-                     'ign service -s /world/block_stacking_world/create --reqtype ignition.msgs.EntityFactory --reptype ignition.msgs.Boolean --req \'sdf: "<sdf version=\\"1.6\\"><joint name=\\"fix_robot_to_world\\" type=\\"fixed\\"><parent>world</parent><child>fairino5_v6_robot::base_link</child></joint></sdf>"\' --timeout 5000'],
                 output="screen",
             )
         ],
@@ -161,7 +149,7 @@ def generate_launch_description():
             Node(
                 package="ros_gz_sim", executable="create",
                 arguments=["-name", "block_red", "-file", block_sdf_paths["block_red"],
-                           "-x", "0.40", "-y", "-0.10", "-z", "0.025"],
+                           "-x", "0.40", "-y", "-0.10", "-z", "0.065"],
                 output="screen",
             )
         ],
@@ -173,7 +161,7 @@ def generate_launch_description():
             Node(
                 package="ros_gz_sim", executable="create",
                 arguments=["-name", "block_green", "-file", block_sdf_paths["block_green"],
-                           "-x", "0.50", "-y", "0.00", "-z", "0.025"],
+                           "-x", "0.50", "-y", "0.00", "-z", "0.065"],
                 output="screen",
             )
         ],
@@ -185,7 +173,7 @@ def generate_launch_description():
             Node(
                 package="ros_gz_sim", executable="create",
                 arguments=["-name", "block_blue", "-file", block_sdf_paths["block_blue"],
-                           "-x", "0.60", "-y", "0.10", "-z", "0.025"],
+                           "-x", "0.60", "-y", "0.10", "-z", "0.065"],
                 output="screen",
             )
         ],
@@ -268,8 +256,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         declare_use_gazebo, declare_use_rviz, declare_world_file,
-        use_sim_time, robot_state_pub,
-        gazebo_launch, spawn_robot, fix_robot_joint,
+        set_gz_resource, use_sim_time, robot_state_pub,
+        gazebo_launch, spawn_robot,
         spawn_block_red, spawn_block_green, spawn_block_blue,
         gz_clock_bridge, gz_pose_bridge, block_tf_node, block_collision_node, block_marker_node,
         table_marker_node, pick_place_node,
